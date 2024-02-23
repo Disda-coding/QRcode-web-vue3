@@ -11,10 +11,7 @@
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-      </el-form-item>
+
     </el-form>
 
     <el-row :gutter="10" class="mb8">
@@ -127,6 +124,7 @@ function getLocationList(){
       label: `${res.data[idx]}`,
     }))
     locationOps.value=options
+    console.log(locationOps.value)
   })
 }
 const data = reactive({
@@ -246,5 +244,14 @@ function handleExport() {
 getList();
 onBeforeMount(() => {
   getLocationList(); // 在beforeCreate时调用方法
+});
+// 监听事件，可以实现输入为空时自动查询数据库
+watch(() => data.queryParams.name, (newValue, oldValue) => {
+  // 在这里处理数据变化时的操作
+  if (newValue==''){
+    resetQuery()
+  }else{
+    handleQuery()
+  }
 });
 </script>

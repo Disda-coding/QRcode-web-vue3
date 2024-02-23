@@ -1,5 +1,11 @@
 import request from '@/utils/request'
 
+export function getIpTypeOps() {
+  return request({
+    url: '/ledger/ip/getIpTypeOps',
+    method: 'get',
+  })
+}
 // 查询ip地址列表
 export function listIp(query) {
   return request({

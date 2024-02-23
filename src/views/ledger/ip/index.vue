@@ -10,9 +10,11 @@
         />
       </el-form-item>
       <el-form-item label="地址类型" prop="type">
-        <el-input
+        <el-select-v2
             v-model="queryParams.type"
             placeholder="请输入地址类型"
+            filterable
+            :options="ipTypeOps"
             clearable
             @keyup.enter="handleQuery"
         />
@@ -119,7 +121,8 @@
 </template>
 
 <script setup name="Ip">
-import { listIp, getIp, delIp, addIp, updateIp } from "@/api/ledger/ip";
+import {listIp, getIp, delIp, addIp, updateIp, getIpTypeOps} from "@/api/ledger/ip";
+import {getLocationOps} from "@/api/ledger/location.js";
 
 const { proxy } = getCurrentInstance();
 
@@ -132,7 +135,7 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
-
+const ipTypeOps=ref([])
 const data = reactive({
   form: {},
   queryParams: {
@@ -251,5 +254,28 @@ function handleExport() {
   }, `ip_${new Date().getTime()}.xlsx`)
 }
 
+function getIpTypeList() {
+  getIpTypeOps().then(res=>{
+    const options = Array.from({ length: res.data.length }).map((_, idx) => ({
+      value: `${res.data[idx]}`,
+      label: `${res.data[idx]}`,
+    }))
+    ipTypeOps.value=options
+
+  })
+}
+
+onBeforeMount(() => {
+  getIpTypeList(); // 在beforeCreate时调用方法
+});
+// 监听事件，可以实现输入为空时自动查询数据库
+watch(() => data.queryParams, (newValue, oldValue) => {
+  // 在这里处理数据变化时的操作
+  if (newValue==''){
+    resetQuery()
+  }else{
+    handleQuery()
+  }
+},{deep:true});
 getList();
 </script>

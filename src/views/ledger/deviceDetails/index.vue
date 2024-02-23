@@ -22,10 +22,7 @@
             @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-      </el-form-item>
+
     </el-form>
 
     <el-row :gutter="10" class="mb8">
@@ -155,28 +152,28 @@ const data = reactive({
 });
 
 const {queryParams, form, rules} = toRefs(data);
+
 /** 查询所有设备类型 **/
-function getDevTypeList(){
-  getDevTypeOps().then(res=>{
-    const options = Array.from({ length: res.data.length }).map((_, idx) => ({
+function getDevTypeList() {
+  getDevTypeOps().then(res => {
+    const options = Array.from({length: res.data.length}).map((_, idx) => ({
       value: `${res.data[idx]}`,
       label: `${res.data[idx]}`,
     }))
-    devTypeOps.value=options
+    devTypeOps.value = options
   })
 }
+
 /** 查询所有型号类型 **/
-function getDevModelList(){
-  getDevModelOps().then(res=>{
-    const options = Array.from({ length: res.data.length }).map((_, idx) => ({
+function getDevModelList() {
+  getDevModelOps().then(res => {
+    const options = Array.from({length: res.data.length}).map((_, idx) => ({
       value: `${res.data[idx]}`,
       label: `${res.data[idx]}`,
     }))
-    devModelOps.value=options
+    devModelOps.value = options
   })
 }
-
-
 
 
 /** 查询设备详情列表 */
@@ -287,4 +284,12 @@ onBeforeMount(() => {
   getDevTypeList(); // 在beforeCreate时调用方法
   getDevModelList(); // 在beforeCreate时调用方法
 });
+watch(() => data.queryParams, (newValue, oldValue) => {
+  // 在这里处理数据变化时的操作
+  if (newValue == '') {
+    resetQuery()
+  } else {
+    handleQuery()
+  }
+}, {deep: true});
 </script>
