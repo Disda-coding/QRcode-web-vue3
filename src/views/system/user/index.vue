@@ -438,7 +438,7 @@ function resetQuery() {
   dateRange.value = [];
   proxy.resetForm("queryRef");
   queryParams.value.deptId = undefined;
-  proxy.$refs.deptTreeRef.setCurrentKey(null);
+  proxy.$refs.tree.setCurrentKey(null);
   handleQuery();
 };
 /** 删除按钮操作 */

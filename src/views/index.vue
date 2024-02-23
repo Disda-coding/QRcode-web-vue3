@@ -9,7 +9,7 @@ const router = useRouter();
 import {encrypt, decrypt} from "@/utils/jsencrypt";
 // 首页不默认跳转
 onMounted(() => {
-  router.push({path: "/system/user"});
+  router.push({path: "/ledger/main"});
 })
 
 function goTarget(url) {
