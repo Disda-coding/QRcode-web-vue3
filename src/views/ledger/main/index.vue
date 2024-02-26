@@ -196,13 +196,33 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
+
+    id: 1,
     devName: null,
     devModelId: null,
+    ledgerIpList: null,
+    ledgerDevDetails: {
+      id: null,
+      devType: null,
+      devModel: null
+    },
     opDatetime: null,
     description: null,
     supplyId: null,
+    ledgerPowerSupply: {
+      id: null,
+      status: null
+    },
     sysTypeId: null,
+    ledgerSystem: {
+      id: null,
+      sysType: null
+    },
     locId: null,
+    ledgerLocation: {
+      id: null,
+      name: null
+    },
     orderByColumn: undefined,
     isAsc: undefined
   },
