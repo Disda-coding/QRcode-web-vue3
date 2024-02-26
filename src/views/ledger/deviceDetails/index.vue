@@ -22,7 +22,9 @@
             @keyup.enter="handleQuery"
         />
       </el-form-item>
-
+      <el-form-item>
+        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+      </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
@@ -286,10 +288,6 @@ onBeforeMount(() => {
 });
 watch(() => data.queryParams, (newValue, oldValue) => {
   // 在这里处理数据变化时的操作
-  if (newValue == '') {
-    resetQuery()
-  } else {
     handleQuery()
-  }
-}, {deep: true});
+},{deep:true});
 </script>

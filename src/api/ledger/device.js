@@ -1,5 +1,13 @@
 import request from '@/utils/request'
 
+
+
+export function getDevOptions() {
+  return request({
+    url: '/ledger/ip/getIpDevOptions',
+    method: 'get',
+  })
+}
 // 查询设备信息列表
 export function listDevice(query) {
   return request({

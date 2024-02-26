@@ -2,17 +2,19 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="设备名称" prop="devName">
-        <el-input
+        <el-select-v2 style="width:167.5px"
             v-model="queryParams.devName"
             placeholder="请输入设备名称"
+            filterable
+            :options="devOps"
             clearable
             @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="设备型号id" prop="devModelId">
+      <el-form-item label="设备型号" prop="devModelId">
         <el-input
             v-model="queryParams.devModelId"
-            placeholder="请输入设备型号id"
+            placeholder="请输入设备型号"
             clearable
             @keyup.enter="handleQuery"
         />
@@ -99,23 +101,24 @@
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="deviceList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="deviceList" @selection-change="handleSelectionChange" @sort-change="handleSortChange" >
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="主键id" align="center" prop="id" />
-      <el-table-column label="设备名称" align="center" prop="devName" />
-      <el-table-column label="设备型号id" align="center" prop="devModelId" />
-      <el-table-column label="运维时间" align="center" prop="opDatetime" width="180">
+      <el-table-column fixed label="主键id" align="center" prop="id" />
+      <el-table-column fixed label="所属机柜" align="center" prop="ledgerLocation.name" />
+      <el-table-column fixed label="设备名称" align="center" prop="devName" />
+      <el-table-column label="设备型号" align="center" prop="ledgerDevDetails.devModel" />
+      <el-table-column label="设备类型" align="center" prop="ledgerDevDetails.devType" />
+      <el-table-column label="运维时间" align="center" prop="opDatetime" width="180" :sort-orders="['descending','ascending']" sortable="custom">
         <template #default="scope">
           <span>{{ parseTime(scope.row.opDatetime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="电源类型" align="center" prop="ledgerPowerSupply.status" />
+      <el-table-column label="系统类型" align="center" prop="ledgerSystem.sysType" />
       <el-table-column label="描述" align="center" prop="description" />
-      <el-table-column label="电源id" align="center" prop="supplyId" />
-      <el-table-column label="系统类型id" align="center" prop="sysTypeId" />
-      <el-table-column label="机柜id" align="center" prop="locId" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['ledger:device:edit']">修改</el-button>
+          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['ledger:device:query']">查看详情</el-button>
           <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['ledger:device:remove']">删除</el-button>
         </template>
       </el-table-column>
@@ -170,7 +173,9 @@
 </template>
 
 <script setup name="Device">
-import { listDevice, getDevice, delDevice, addDevice, updateDevice } from "@/api/ledger/device";
+import {listDevice, getDevice, delDevice, addDevice, updateDevice, getDevOptions} from "@/api/ledger/device";
+import {isEqual} from "lodash";
+
 
 const { proxy } = getCurrentInstance();
 
@@ -184,6 +189,7 @@ const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
 const daterangeOpDatetime = ref([]);
+const devOps=ref([]);
 
 const data = reactive({
   form: {},
@@ -196,7 +202,9 @@ const data = reactive({
     description: null,
     supplyId: null,
     sysTypeId: null,
-    locId: null
+    locId: null,
+    orderByColumn: undefined,
+    isAsc: undefined
   },
   rules: {
   }
@@ -240,6 +248,14 @@ function reset() {
   proxy.resetForm("deviceRef");
 }
 
+function getDevList(){
+  getDevOptions().then(res=>{
+    devOps.value = res.data.map(item => {
+      item.value = item.label;
+      return item;
+    });
+  })
+}
 /** 搜索按钮操作 */
 function handleQuery() {
   queryParams.value.pageNum = 1;
@@ -316,6 +332,27 @@ function handleExport() {
     ...queryParams.value
   }, `device_${new Date().getTime()}.xlsx`)
 }
+function handleSortChange(column, prop, order) {
+  queryParams.value.orderByColumn = column.prop;
+  queryParams.value.isAsc = column.order;
+  getList();
+};
+
+
+
+watch(() => data.queryParams.devName, (newValue, oldValue) => {
+  // 在这里处理数据变化时的操作
+  if (newValue==''){
+    resetQuery()
+  }else{
+    handleQuery()
+  }
+});
+
+
 
 getList();
+onBeforeMount(() => {
+  getDevList();
+});
 </script>

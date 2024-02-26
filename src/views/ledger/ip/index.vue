@@ -24,13 +24,12 @@
             v-model="queryParams.devId"
             placeholder="请输入设备名称"
             filterable
-            :options="ipDevOps"
+            :options="devOps"
             clearable
             @keyup.enter="handleQuery"
         />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
@@ -113,7 +112,7 @@
               v-model="form.device"
               placeholder="请输入设备名称"
               filterable
-              :options="ipDevOps"
+              :options="devOps"
               clearable
           />
         </el-form-item>
@@ -129,8 +128,9 @@
 </template>
 
 <script setup name="Ip">
-import {listIp, getIp, delIp, addIp, updateIp,getDevOptions, getIpTypeOps} from "@/api/ledger/ip";
+import {listIp, getIp, delIp, addIp, updateIp, getIpTypeOps} from "@/api/ledger/ip";
 import {getLocationOps} from "@/api/ledger/location.js";
+import {getDevOptions} from "@/api/ledger/device.js";
 
 const { proxy } = getCurrentInstance();
 
@@ -144,7 +144,7 @@ const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
 const ipTypeOps=ref([]);
-let ipDevOps=ref([]);
+const devOps=ref([]);
 
 const data = reactive({
   form: {},
@@ -267,7 +267,7 @@ function handleExport() {
 }
 function getDevList(){
   getDevOptions().then(res=>{
-    ipDevOps.value=res.data
+    devOps.value=res.data
   })
 }
 function getIpTypeList() {
