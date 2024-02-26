@@ -1,5 +1,11 @@
 import request from '@/utils/request'
 
+export function getDevOptions() {
+  return request({
+    url: '/ledger/ip/getIpDevOptions',
+    method: 'get',
+  })
+}
 export function getIpTypeOps() {
   return request({
     url: '/ledger/ip/getIpTypeOps',

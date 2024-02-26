@@ -19,10 +19,12 @@
             @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="设备id" prop="devId">
-        <el-input
+      <el-form-item label="设备名称" prop="devId">
+        <el-select-v2
             v-model="queryParams.devId"
-            placeholder="请输入设备id"
+            placeholder="请输入设备名称"
+            filterable
+            :options="ipDevOps"
             clearable
             @keyup.enter="handleQuery"
         />
@@ -80,7 +82,7 @@
       <el-table-column label="主键id" align="center" prop="id" />
       <el-table-column label="ip地址" align="center" prop="ipAddr" />
       <el-table-column label="地址类型" align="center" prop="type" />
-      <el-table-column label="设备id" align="center" prop="devId" />
+      <el-table-column label="设备名称" align="center" prop="device" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['ledger:ip:edit']">修改</el-button>
@@ -107,7 +109,13 @@
           <el-input v-model="form.type" placeholder="请输入地址类型" />
         </el-form-item>
         <el-form-item label="设备id" prop="devId">
-          <el-input v-model="form.devId" placeholder="请输入设备id" />
+          <el-select-v2 style="width: 100%"
+              v-model="form.device"
+              placeholder="请输入设备名称"
+              filterable
+              :options="ipDevOps"
+              clearable
+          />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -121,7 +129,7 @@
 </template>
 
 <script setup name="Ip">
-import {listIp, getIp, delIp, addIp, updateIp, getIpTypeOps} from "@/api/ledger/ip";
+import {listIp, getIp, delIp, addIp, updateIp,getDevOptions, getIpTypeOps} from "@/api/ledger/ip";
 import {getLocationOps} from "@/api/ledger/location.js";
 
 const { proxy } = getCurrentInstance();
@@ -135,7 +143,9 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
-const ipTypeOps=ref([])
+const ipTypeOps=ref([]);
+let ipDevOps=ref([]);
+
 const data = reactive({
   form: {},
   queryParams: {
@@ -143,7 +153,8 @@ const data = reactive({
     pageSize: 10,
     ipAddr: null,
     type: null,
-    devId: null
+    devId: null,
+    device:null
   },
   rules: {
   }
@@ -173,7 +184,8 @@ function reset() {
     id: null,
     ipAddr: null,
     type: null,
-    devId: null
+    devId: null,
+    dev_name:null
   };
   proxy.resetForm("ipRef");
 }
@@ -253,7 +265,11 @@ function handleExport() {
     ...queryParams.value
   }, `ip_${new Date().getTime()}.xlsx`)
 }
-
+function getDevList(){
+  getDevOptions().then(res=>{
+    ipDevOps.value=res.data
+  })
+}
 function getIpTypeList() {
   getIpTypeOps().then(res=>{
     const options = Array.from({ length: res.data.length }).map((_, idx) => ({
@@ -261,12 +277,12 @@ function getIpTypeList() {
       label: `${res.data[idx]}`,
     }))
     ipTypeOps.value=options
-
   })
 }
 
 onBeforeMount(() => {
   getIpTypeList(); // 在beforeCreate时调用方法
+  getDevList();
 });
 // 监听事件，可以实现输入为空时自动查询数据库
 watch(() => data.queryParams, (newValue, oldValue) => {
