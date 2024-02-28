@@ -120,7 +120,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -161,7 +161,7 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
+          <el-button type="primary" @click="submitForm" v-hasPermi="['ledger:device:edit','ledger:device:add']">确 定</el-button>
           <el-button @click="cancel">取 消</el-button>
         </div>
       </template>

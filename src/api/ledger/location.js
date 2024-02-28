@@ -1,5 +1,22 @@
 import request from '@/utils/request'
 
+
+//查看机柜的二维码信息
+export function getLocQRcode(id) {
+  return request({
+    url: '/ledger/location/getLocQRcode/' + id,
+    method: 'get'
+  })
+}
+
+//查看机柜下的机器
+export function getDevList(id) {
+  return request({
+    url: '/ledger/location/getDevList/' + id,
+    method: 'get'
+  })
+}
+
 // 查询机柜unique列表
 export function getLocationOps() {
   return request({

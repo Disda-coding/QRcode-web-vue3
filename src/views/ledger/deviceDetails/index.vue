@@ -126,6 +126,7 @@ import {
   addDeviceDetails,
   updateDeviceDetails, getDevTypeOps, getDevModelOps
 } from "@/api/ledger/deviceDetails";
+import {cloneDeep, isEqual} from "lodash";
 
 const {proxy} = getCurrentInstance();
 
@@ -140,6 +141,7 @@ const total = ref(0);
 const title = ref("");
 const devTypeOps = ref([]);
 const devModelOps = ref([]);
+const updateForm =  ref({});
 
 const data = reactive({
 
@@ -169,11 +171,9 @@ function getDevTypeList() {
 /** 查询所有型号类型 **/
 function getDevModelList() {
   getDevModelOps().then(res => {
-    const options = Array.from({length: res.data.length}).map((_, idx) => ({
-      value: `${res.data[idx]}`,
-      label: `${res.data[idx]}`,
-    }))
-    devModelOps.value = options
+    devModelOps.value = res.data.map(item => {
+      return { value: item.label, label: item.label };
+    });
   })
 }
 
@@ -235,6 +235,7 @@ function handleUpdate(row) {
   reset();
   const _id = row.id || ids.value
   getDeviceDetails(_id).then(response => {
+    updateForm.value =cloneDeep(response.data)
     form.value = response.data;
     open.value = true;
     title.value = "修改设备详情";
@@ -245,6 +246,12 @@ function handleUpdate(row) {
 function submitForm() {
   proxy.$refs["deviceDetailsRef"].validate(valid => {
     if (valid) {
+      // 判断是否需要像后台提交
+      if(isEqual(updateForm.value,form.value)){
+        proxy.$modal.msgSuccess("无修改");
+        open.value = false;
+        return ;
+      }
       if (form.value.id != null) {
         updateDeviceDetails(form.value).then(response => {
           proxy.$modal.msgSuccess("修改成功");

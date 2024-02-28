@@ -21,7 +21,7 @@
       </el-form-item>
       <el-form-item label="设备名称" prop="devId">
         <el-select-v2
-            v-model="queryParams.devId"
+            v-model="form.devId"
             placeholder="请输入设备名称"
             filterable
             :options="devOps"
@@ -107,9 +107,9 @@
         <el-form-item label="地址类型" prop="type">
           <el-input v-model="form.type" placeholder="请输入地址类型" />
         </el-form-item>
-        <el-form-item label="设备id" prop="devId">
+        <el-form-item label="设备名称" prop="devId">
           <el-select-v2 style="width: 100%"
-              v-model="form.device"
+              v-model="form.devId"
               placeholder="请输入设备名称"
               filterable
               :options="devOps"
@@ -131,6 +131,7 @@
 import {listIp, getIp, delIp, addIp, updateIp, getIpTypeOps} from "@/api/ledger/ip";
 import {getLocationOps} from "@/api/ledger/location.js";
 import {getDevOptions} from "@/api/ledger/device.js";
+import {cloneDeep, isEqual} from "lodash";
 
 const { proxy } = getCurrentInstance();
 
@@ -145,6 +146,7 @@ const total = ref(0);
 const title = ref("");
 const ipTypeOps=ref([]);
 const devOps=ref([]);
+const updateForm =  ref({});
 
 const data = reactive({
   form: {},
@@ -221,6 +223,7 @@ function handleUpdate(row) {
   reset();
   const _id = row.id || ids.value
   getIp(_id).then(response => {
+    updateForm.value =cloneDeep(response.data)
     form.value = response.data;
     open.value = true;
     title.value = "修改IP地址详情";
@@ -231,6 +234,11 @@ function handleUpdate(row) {
 function submitForm() {
   proxy.$refs["ipRef"].validate(valid => {
     if (valid) {
+      if(isEqual(updateForm.value,form.value)){
+        proxy.$modal.msgSuccess("无修改");
+        open.value = false;
+        return ;
+      }
       if (form.value.id != null) {
         updateIp(form.value).then(response => {
           proxy.$modal.msgSuccess("修改成功");
@@ -287,11 +295,7 @@ onBeforeMount(() => {
 // 监听事件，可以实现输入为空时自动查询数据库
 watch(() => data.queryParams, (newValue, oldValue) => {
   // 在这里处理数据变化时的操作
-  if (newValue==''){
-    resetQuery()
-  }else{
     handleQuery()
-  }
 },{deep:true});
 getList();
 </script>

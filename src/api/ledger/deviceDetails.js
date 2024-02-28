@@ -1,13 +1,13 @@
 import request from '@/utils/request'
 //查询设备型号
-export function getDevModelOps(data) {
+export function getDevModelOps() {
     return request({
         url: '/ledger/deviceDetails/getDevModelOps',
         method: 'get',
     })
 }
 //查询设备类型
-export function getDevTypeOps(data) {
+export function getDevTypeOps() {
     return request({
         url: '/ledger/deviceDetails/getDevTypeOps',
         method: 'get',

@@ -1,5 +1,12 @@
 import request from '@/utils/request'
 
+
+export function getPowerSupplyOps() {
+  return request({
+    url: '/ledger/supply/getPowerSupplyOps',
+    method: 'get',
+  })
+}
 // 查询电源详情列表
 export function listSupply(query) {
   return request({

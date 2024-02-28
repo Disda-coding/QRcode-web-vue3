@@ -1,5 +1,13 @@
 import request from '@/utils/request'
 
+
+export function getSystemOps() {
+  return request({
+    url: '/ledger/sys/getSystemOps',
+    method: 'get',
+  })
+}
+
 // 查询操作系统列表
 export function listSys(query) {
   return request({

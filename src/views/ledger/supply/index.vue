@@ -82,6 +82,7 @@
 
 <script setup name="Supply">
 import { listSupply, getSupply, delSupply, addSupply, updateSupply } from "@/api/ledger/supply";
+import {cloneDeep, isEqual} from "lodash";
 
 const { proxy } = getCurrentInstance();
 
@@ -94,6 +95,7 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
+const updateForm =  ref({});
 
 const data = reactive({
   form: {},
@@ -164,6 +166,7 @@ function handleUpdate(row) {
   reset();
   const _id = row.id || ids.value
   getSupply(_id).then(response => {
+    updateForm.value =cloneDeep(response.data)
     form.value = response.data;
     open.value = true;
     title.value = "修改电源详情";
@@ -174,6 +177,12 @@ function handleUpdate(row) {
 function submitForm() {
   proxy.$refs["supplyRef"].validate(valid => {
     if (valid) {
+      // 判断是否需要像后台提交
+      if(isEqual(updateForm.value,form.value)){
+        proxy.$modal.msgSuccess("无修改");
+        open.value = false;
+        return ;
+      }
       if (form.value.id != null) {
         updateSupply(form.value).then(response => {
           proxy.$modal.msgSuccess("修改成功");

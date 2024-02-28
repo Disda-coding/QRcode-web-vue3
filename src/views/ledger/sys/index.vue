@@ -96,6 +96,8 @@
 <script setup name="Sys">
 import { listSys, getSys, delSys, addSys, updateSys } from "@/api/ledger/sys";
 
+import {cloneDeep, isEqual} from "lodash";
+
 const { proxy } = getCurrentInstance();
 
 const sysList = ref([]);
@@ -107,6 +109,7 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
+const updateForm =  ref({});
 
 const data = reactive({
   form: {},
@@ -177,6 +180,7 @@ function handleUpdate(row) {
   reset();
   const _id = row.id || ids.value
   getSys(_id).then(response => {
+    updateForm.value =cloneDeep(response.data)
     form.value = response.data;
     open.value = true;
     title.value = "修改操作系统";
@@ -187,6 +191,12 @@ function handleUpdate(row) {
 function submitForm() {
   proxy.$refs["sysRef"].validate(valid => {
     if (valid) {
+      // 判断是否需要像后台提交
+      if(isEqual(updateForm.value,form.value)){
+        proxy.$modal.msgSuccess("无修改");
+        open.value = false;
+        return ;
+      }
       if (form.value.id != null) {
         updateSys(form.value).then(response => {
           proxy.$modal.msgSuccess("修改成功");
