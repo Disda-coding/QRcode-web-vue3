@@ -105,7 +105,7 @@ const data = reactive({
     status: null
   },
   rules: {
-    status:[{required:true, message: '请输入电源状态', trigger: 'blur'}],
+    status:[{required:true, message: '请输入电源状态', trigger: 'blur'}]}
 });
 
 const { queryParams, form, rules } = toRefs(data);

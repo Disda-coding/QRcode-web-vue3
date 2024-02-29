@@ -199,8 +199,8 @@ const data = reactive({
 });
 
 function checkMaxVal(rule, value, callback) {
-  if (value < 1 || value > 24) {
-    callback(new Error('请输入[1,24]之间的数字'));
+  if (value < 1 || value > 32) {
+    callback(new Error('请输入[1,32]之间的数字'));
   } else {
     callback();
   }
