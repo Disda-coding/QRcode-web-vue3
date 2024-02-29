@@ -119,6 +119,7 @@ const data = reactive({
     sysType: null
   },
   rules: {
+    sysType:[{required:true, message: '请输入操作系统', trigger: 'blur'}],
   }
 });
 

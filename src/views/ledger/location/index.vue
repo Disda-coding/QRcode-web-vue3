@@ -166,7 +166,9 @@ const data = reactive({
     name: null,
     id:null
   },
-  rules: {}
+  rules: {
+    name:[{required:true, message: '请输入机柜名', trigger: 'blur'}],
+  }
 });
 
 const {queryParams, form, rules} = toRefs(data);

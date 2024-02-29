@@ -152,7 +152,9 @@ const data = reactive({
     devType: null,
     devModel: null
   },
-  rules: {}
+  rules: {
+    devModel:[{required:true, message: '请输入设备型号', trigger: 'blur'}],
+  }
 });
 
 const {queryParams, form, rules} = toRefs(data);

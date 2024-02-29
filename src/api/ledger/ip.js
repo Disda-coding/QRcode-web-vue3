@@ -1,4 +1,12 @@
 import request from '@/utils/request'
+
+export function getAllIps(param){
+  return request({
+    url: '/ledger/ip/getAllIps',
+    method: 'get',
+    params: param
+  })
+}
 export function getDevIps(id) {
   return request({
     url: '/ledger/ip/getDevIps/' + id,

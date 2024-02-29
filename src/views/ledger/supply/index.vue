@@ -66,7 +66,7 @@
     <!-- 添加或修改电源详情对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
       <el-form ref="supplyRef" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="电源状态" prop="devType">
+        <el-form-item label="电源状态" prop="status">
           <el-input v-model="form.status" placeholder="请输入电源状态"/>
         </el-form-item>
       </el-form>
@@ -105,7 +105,7 @@ const data = reactive({
     status: null
   },
   rules: {
-  }
+    status:[{required:true, message: '请输入电源状态', trigger: 'blur'}],
 });
 
 const { queryParams, form, rules } = toRefs(data);
