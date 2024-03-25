@@ -464,7 +464,7 @@ function cancel() {
 function reset() {
   editableTabsValue.value = '1'
   editableTabs.value = [{
-    title: '新建任务 1',
+    title: '新建设备 1',
     name: '1',
   }]
   tabIndex.value = 1
@@ -737,8 +737,7 @@ watch(() => daterangeOpDatetime, (newValue, oldValue) => {
 
 function handleTabsEdit(targetName, action) {
   if (action === 'add') {
-    let template = JSON.parse(JSON.stringify(uploadForm.value[0]))
-
+    let template = JSON.parse(JSON.stringify(uploadForm.value[uploadForm.value.length - 1]))
     uploadForm.value.push(template)
     let newTabName = ++tabIndex.value + '';
     // uploadForm.value[tabIndex.value] = template
