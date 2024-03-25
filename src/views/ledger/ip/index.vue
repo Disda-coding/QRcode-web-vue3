@@ -404,10 +404,22 @@ watch(()=>open.value,(newValue,oldValue)=>{
     ipFlag.value=false
   }
 })
-// 监听事件，可以实现输入为空时自动查询数据库
-watch(() => data.queryParams, (newValue, oldValue) => {
+
+watch(() => data.queryParams.ipAddr, (newValue, oldValue) => {
   // 在这里处理数据变化时的操作
-  handleQuery()
-}, {deep: true});
+  if (newValue == '') {
+    resetQuery()
+  } else {
+    handleQuery()
+  }
+});
+watch(() => data.queryParams.type, (newValue, oldValue) => {
+  // 在这里处理数据变化时的操作
+  if (newValue == '') {
+    resetQuery()
+  } else {
+    handleQuery()
+  }
+});
 getList();
 </script>

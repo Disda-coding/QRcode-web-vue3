@@ -1,6 +1,12 @@
 import request from '@/utils/request'
 
-
+export function batchAdd(data){
+  return request({
+    url: '/ledger/device/batchAdd',
+    method: 'post',
+    data: data
+  })
+}
 
 export function getDevOptions() {
   return request({

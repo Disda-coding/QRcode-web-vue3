@@ -295,8 +295,21 @@ onBeforeMount(() => {
   getDevTypeList(); // 在beforeCreate时调用方法
   getDevModelList(); // 在beforeCreate时调用方法
 });
-watch(() => data.queryParams, (newValue, oldValue) => {
+// 监听事件，可以实现输入为空时自动查询数据库
+watch(() => data.queryParams.devType, (newValue, oldValue) => {
   // 在这里处理数据变化时的操作
+  if (newValue == '') {
+    resetQuery()
+  } else {
     handleQuery()
-},{deep:true});
+  }
+});
+watch(() => data.queryParams.devModel, (newValue, oldValue) => {
+  // 在这里处理数据变化时的操作
+  if (newValue == '') {
+    resetQuery()
+  } else {
+    handleQuery()
+  }
+});
 </script>

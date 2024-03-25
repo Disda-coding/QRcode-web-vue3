@@ -82,13 +82,13 @@
       <div v-show="isExpandAll">
       </div>
       <el-form-item>
-<!--        <el-button-->
-<!--            type="info"-->
-<!--            plain-->
-<!--            icon="Sort"-->
-<!--            @click="toggleExpandAll"-->
-<!--        >展开/折叠-->
-<!--        </el-button>-->
+        <!--        <el-button-->
+        <!--            type="info"-->
+        <!--            plain-->
+        <!--            icon="Sort"-->
+        <!--            @click="toggleExpandAll"-->
+        <!--        >展开/折叠-->
+        <!--        </el-button>-->
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" @click="resetQuery">重置</el-button>
       </el-form-item>
@@ -181,7 +181,80 @@
 
     <!-- 添加或修改设备信息对话框 -->
     <el-dialog :title="title" v-model="open" width="700px" append-to-body>
-      <el-form ref="deviceRef" :model="form" :rules="rules" label-width="80px">
+      <el-tabs v-if="title=='添加设备信息'" v-model="editableTabsValue" type="card" editable @edit="handleTabsEdit">
+        <el-tab-pane
+            v-for="(item, index) in editableTabs"
+            :key="item.name"
+            :label="item.title"
+            :name="item.name"
+        >
+          <el-form :model="uploadForm[index]" :rules="rules" label-width="80px">
+            <el-form-item label="设备名称" prop="devName">
+              <el-input v-model="uploadForm[index].devName" placeholder="请输入设备名称"/>
+            </el-form-item>
+            <el-form-item label="序列号" prop="sn">
+              <el-input v-model="uploadForm[index].sn" placeholder="请输入序列号"/>
+            </el-form-item>
+            <el-form-item label="简称" prop="abbreviation">
+              <el-input v-model="uploadForm[index].abbreviation" placeholder="请输入简称"/>
+            </el-form-item>
+            <el-form-item label="设备型号" prop="devModelId">
+              <el-select-v2 style="width: 100%"
+                            v-model="uploadForm[index].devModelId"
+                            placeholder="请输入设备名称"
+                            filterable
+                            :options="devModelOps"
+                            clearable
+              />
+            </el-form-item>
+            <el-form-item label="运维时间" prop="opDatetime">
+              <el-date-picker clearable
+                              v-model="uploadForm[index].opDatetime"
+                              type="date"
+                              value-format="YYYY-MM-DD"
+                              placeholder="请选择运维时间">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="电源类型" prop="supplyId">
+              <el-select-v2 style="width: 100%"
+                            v-model="uploadForm[index].supplyId"
+                            placeholder="请输入电源类型"
+                            filterable
+                            :options="powerSupplyOps"
+                            clearable
+              />
+            </el-form-item>
+            <el-form-item label="系统类型" prop="sysTypeId">
+              <el-select-v2 style="width: 100%"
+                            v-model="uploadForm[index].sysTypeId"
+                            placeholder="请输入系统类型"
+                            filterable
+                            :options="systemOps"
+                            clearable
+              />
+            </el-form-item>
+            <el-form-item label="机柜" prop="locId">
+              <el-select-v2 style="width: 100%"
+                            v-model="uploadForm[index].locId"
+                            placeholder="请输入系统类型"
+                            filterable
+                            :options="locationOps"
+                            clearable
+              />
+            </el-form-item>
+            <el-form-item label="描述" prop="description">
+              <el-input v-model="uploadForm[index].description" type="textarea" placeholder="请输入内容"/>
+            </el-form-item>
+            <el-form-item label="IP列表" v-if="title=='设备信息'">
+              <div class="tag" v-for="(tag,index) in devIps">
+                <el-tag size="large" :key="index">{{ tag }}</el-tag>
+              </div>
+            </el-form-item>
+          </el-form>
+
+        </el-tab-pane>
+      </el-tabs>
+      <el-form v-if="title!='添加设备信息'" ref="deviceRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="设备名称" prop="devName">
           <el-input v-model="form.devName" placeholder="请输入设备名称"/>
         </el-form-item>
@@ -240,10 +313,11 @@
         </el-form-item>
         <el-form-item label="IP列表" v-if="title=='设备信息'">
           <div class="tag" v-for="(tag,index) in devIps">
-            <el-tag  size="large"  :key="index">{{ tag }}</el-tag>
+            <el-tag size="large" :key="index">{{ tag }}</el-tag>
           </div>
         </el-form-item>
       </el-form>
+
       <template #footer>
         <div class="dialog-footer">
           <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -255,7 +329,7 @@
 </template>
 
 <script setup name="Device">
-import {listDevice, getDevice, delDevice, addDevice, updateDevice, getDevOptions} from "@/api/ledger/device";
+import {listDevice, getDevice, delDevice, addDevice, updateDevice, getDevOptions, batchAdd} from "@/api/ledger/device";
 import {cloneDeep, isEqual} from "lodash";
 import {getDevModelOps} from "@/api/ledger/deviceDetails.js";
 import {getLocationOps} from "@/api/ledger/location.js";
@@ -283,6 +357,45 @@ const locationOps = ref([]);
 const powerSupplyOps = ref([]);
 const systemOps = ref([]);
 const devIps = ref([]);
+// 批量添加的标签页
+const editableTabsValue = ref('1');
+const editableTabs = ref([{
+  title: '新增设备 1',
+  name: '1',
+}]);
+const tabIndex = ref(1);
+const uploadForm = ref([
+  {
+    sn: null,
+    abbreviation: null,
+    id: null,
+    devName: null,
+    devModelId: null,
+    ledgerIpList: null,
+    ledgerDevDetails: {
+      id: null,
+      devType: null,
+      devModel: null
+    },
+    opDatetime: null,
+    description: null,
+    supplyId: null,
+    ledgerPowerSupply: {
+      id: null,
+      status: null
+    },
+    sysTypeId: null,
+    ledgerSystem: {
+      id: null,
+      sysType: null
+    },
+    locId: null,
+    ledgerLocation: {
+      id: null,
+      name: null
+    },
+  }
+])
 
 const data = reactive({
   form: {},
@@ -330,7 +443,7 @@ function getList() {
   loading.value = true;
   queryParams.value.params = {};
 
-  if (null != daterangeOpDatetime && '' != daterangeOpDatetime&& daterangeOpDatetime.value!=null && daterangeOpDatetime.value.length > 0) {
+  if (null != daterangeOpDatetime && '' != daterangeOpDatetime && daterangeOpDatetime.value != null && daterangeOpDatetime.value.length > 0) {
     queryParams.value.params["beginOpDatetime"] = daterangeOpDatetime.value[0];
     queryParams.value.params["endOpDatetime"] = daterangeOpDatetime.value[1];
   }
@@ -349,7 +462,45 @@ function cancel() {
 
 // 表单重置
 function reset() {
-  form.value = {
+  editableTabsValue.value = '1'
+  editableTabs.value = [{
+    title: '新建任务 1',
+    name: '1',
+  }]
+  tabIndex.value = 1
+  uploadForm.value=[
+    {
+      sn: null,
+      abbreviation: null,
+      id: null,
+      devName: null,
+      devModelId: null,
+      ledgerIpList: null,
+      ledgerDevDetails: {
+        id: null,
+        devType: null,
+        devModel: null
+      },
+      opDatetime: null,
+      description: null,
+      supplyId: null,
+      ledgerPowerSupply: {
+        id: null,
+        status: null
+      },
+      sysTypeId: null,
+      ledgerSystem: {
+        id: null,
+        sysType: null
+      },
+      locId: null,
+      ledgerLocation: {
+        id: null,
+        name: null
+      },
+    }
+  ]
+  form.value = [{
     sn: null,
     abbreviation: null,
     id: null,
@@ -378,34 +529,39 @@ function reset() {
       id: null,
       name: null
     },
-  };
-  proxy.resetForm("deviceRef");
+  }];
+  // proxy.resetForm("deviceRef");
 }
 
 function toggleExpandAll() {
   isExpandAll.value = !isExpandAll.value;
 }
-function getSystemList(){
-  getSystemOps().then(res=>{
-    systemOps.value=res.data
+
+function getSystemList() {
+  getSystemOps().then(res => {
+    systemOps.value = res.data
   })
 }
-function getPowerSupplyList(){
-  getPowerSupplyOps().then(res=>{
-    powerSupplyOps.value=res.data
+
+function getPowerSupplyList() {
+  getPowerSupplyOps().then(res => {
+    powerSupplyOps.value = res.data
   })
 }
+
 function getLocationList() {
   getLocationOps().then(res => {
     locationOps.value = res.data
   })
 }
-function getDevIpList(_id){
-  getDevIps(_id).then(res=>{
-    devIps.value=res.data
+
+function getDevIpList(_id) {
+  getDevIps(_id).then(res => {
+    devIps.value = res.data
     console.log(res.data)
   })
 }
+
 function getDevList() {
   getDevOptions().then(res => {
     devOps.value = res.data.map(item => {
@@ -458,34 +614,34 @@ function handleUpdate(row) {
     form.value = response.data;
     open.value = true;
     title.value = "设备信息";
-    console.log(form.value.ledgerDevDetails.devModel)
+
   });
 }
 
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs["deviceRef"].validate(valid => {
-    if (valid) {
-      // 判断是否需要像后台提交
-      if (isEqual(updateForm.value, form.value)) {
-        proxy.$modal.msgSuccess("无修改");
-        open.value = false;
-        return;
-      } else if (form.value.id != null) {
-        updateDevice(form.value).then(response => {
-          proxy.$modal.msgSuccess("修改成功");
-          open.value = false;
-          getList();
-        });
-      } else {
-        addDevice(form.value).then(response => {
-          proxy.$modal.msgSuccess("新增成功");
-          open.value = false;
-          getList();
-        });
-      }
-    }
-  });
+
+
+  // 判断是否需要像后台提交
+  if (isEqual(updateForm.value, form.value)) {
+    proxy.$modal.msgSuccess("无修改");
+    open.value = false;
+    return;
+  } else if (form.value.id != null) {
+    updateDevice(form.value).then(response => {
+      proxy.$modal.msgSuccess("修改成功");
+      open.value = false;
+      getList();
+    });
+  } else {
+    console.log(uploadForm.value)
+    batchAdd(uploadForm.value).then(response => {
+      proxy.$modal.msgSuccess("新增成功");
+      open.value = false;
+      getList();
+    });
+  }
+
 }
 
 /** 删除按钮操作 */
@@ -577,7 +733,45 @@ watch(() => daterangeOpDatetime, (newValue, oldValue) => {
   } else {
     handleQuery()
   }
-},{deep:true});
+}, {deep: true});
+
+function handleTabsEdit(targetName, action) {
+  if (action === 'add') {
+    let template = JSON.parse(JSON.stringify(uploadForm.value[0]))
+
+    uploadForm.value.push(template)
+    let newTabName = ++tabIndex.value + '';
+    // uploadForm.value[tabIndex.value] = template
+    editableTabs.value.push({
+      title: '新建设备 ' + tabIndex.value,
+      name: newTabName,
+    });
+    editableTabsValue.value = newTabName;
+    console.log(uploadForm.value)
+  }
+  if (action === 'remove') {
+    let tabs = editableTabs.value;
+    let activeName = editableTabsValue.value;
+    if (activeName === targetName) {
+      tabs.forEach((tab, index) => {
+        if (tab.name === targetName) {
+          let nextTab = tabs[index + 1] || tabs[index - 1];
+          if (nextTab) {
+            activeName = nextTab.name;
+          }
+        }
+      });
+    }
+
+    editableTabsValue.value = activeName;
+    // 删除该标签页对应的内容就可以
+    let index = tabs.findIndex(tab => tab.name === targetName);
+    console.log(index)
+    uploadForm.value.splice(index,1)
+    console.log(uploadForm.value)
+    editableTabs.value = tabs.filter(tab => tab.name !== targetName);
+  }
+}
 
 getList();
 onBeforeMount(() => {
