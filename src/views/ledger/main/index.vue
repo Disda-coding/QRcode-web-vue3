@@ -69,10 +69,10 @@
                       @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="机柜类型" prop="locId">
+      <el-form-item label="机柜名" prop="locId">
         <el-select-v2 style="width:167.5px"
                       v-model="queryParams.locId"
-                      placeholder="请输入机柜类型"
+                      placeholder="请输入机柜名"
                       :options="locationOps"
                       clearable
                       filterable
@@ -238,7 +238,7 @@
             <el-form-item label="机柜" prop="locId">
               <el-select-v2 style="width: 100%"
                             v-model="uploadForm[index].locId"
-                            placeholder="请输入系统类型"
+                            placeholder="请输入机柜名"
                             filterable
                             :options="locationOps"
                             clearable
@@ -304,7 +304,7 @@
         <el-form-item label="机柜" prop="locId">
           <el-select-v2 style="width: 100%"
                         v-model="form.locId"
-                        placeholder="请输入系统类型"
+                        placeholder="请输入机柜名"
                         filterable
                         :options="locationOps"
                         clearable

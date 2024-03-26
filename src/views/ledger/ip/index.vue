@@ -127,14 +127,14 @@
                           clearable>
             </el-select-v2>
           </el-form-item>
-          <el-form-item label="地址类型" prop="type">
-            <el-autocomplete
+          <el-form-item label="地址类型"  prop="type">
+            <el-autocomplete style="width: 100%"
                 v-model="form.type"
                 :fetch-suggestions="querySearch"
                 clearable
                 placeholder="请输入地址类型"
             />
-            <el-input v-model="form.type" placeholder="请输入地址类型"/>
+
           </el-form-item>
           <el-form-item label="设备名称" prop="devId">
             <el-select-v2 style="width: 100%"
@@ -415,8 +415,6 @@ onBeforeMount(() => {
 
 const querySearch = (queryString,cb) => {
   if (queryString==null) queryString="网"
- console.log(queryString)
-
   const results = queryString
       ? ipTypeOps.value.filter(createFilter(queryString))
       : ipTypeOps.value
