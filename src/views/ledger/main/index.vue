@@ -143,7 +143,7 @@
     <el-table v-loading="loading" :data="deviceList" height="500" @selection-change="handleSelectionChange"
               @sort-change="handleSortChange">
       <el-table-column type="selection" width="55" align="center"/>
-<!--      <el-table-column fixed label="主键id" align="center" prop="id"/>-->
+      <!--      <el-table-column fixed label="主键id" align="center" prop="id"/>-->
       <el-table-column fixed label="所属机柜" align="center" prop="ledgerLocation.name"/>
       <el-table-column fixed label="设备名称" align="center" prop="devName"/>
       <el-table-column fixed label="设备简称" align="center" prop="abbreviation"/>
@@ -209,10 +209,12 @@
             </el-form-item>
             <el-form-item label="运维时间" prop="opDatetime">
               <el-date-picker clearable
+                              style="width: 590px"
                               v-model="uploadForm[index].opDatetime"
                               type="date"
                               value-format="YYYY-MM-DD"
-                              placeholder="请选择运维时间">
+                              popper-class="tzy-popper"
+                              placeholder="格式YYYY-MM-DD，可手动输入">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="电源类型" prop="supplyId">
@@ -468,7 +470,7 @@ function reset() {
     name: '1',
   }]
   tabIndex.value = 1
-  uploadForm.value=[
+  uploadForm.value = [
     {
       sn: null,
       abbreviation: null,
@@ -766,7 +768,7 @@ function handleTabsEdit(targetName, action) {
     // 删除该标签页对应的内容就可以
     let index = tabs.findIndex(tab => tab.name === targetName);
     console.log(index)
-    uploadForm.value.splice(index,1)
+    uploadForm.value.splice(index, 1)
     console.log(uploadForm.value)
     editableTabs.value = tabs.filter(tab => tab.name !== targetName);
   }
@@ -786,5 +788,8 @@ onBeforeMount(() => {
 .tag {
   width: 100%;
   margin-bottom: 10px; /* 可选的，用于添加标签之间的间距 */
+}
+.tzy-popper{
+  margin-left: -10%;
 }
 </style>
