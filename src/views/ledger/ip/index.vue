@@ -21,7 +21,7 @@
       </el-form-item>
       <el-form-item label="设备名称" prop="devId">
         <el-select-v2
-            v-model="form.devId"
+            v-model="queryParams.devId"
             placeholder="请输入设备名称"
             filterable
             :options="devOps"
@@ -80,9 +80,9 @@
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="ipList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="ipList" height="500" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="主键id" align="center" prop="id"/>
+<!--      <el-table-column label="主键id" align="center" prop="id"/>-->
       <el-table-column label="ip地址" align="center" prop="ipAddr"/>
       <el-table-column label="地址类型" align="center" prop="type"/>
       <el-table-column label="设备名称" align="center" prop="device"/>
@@ -128,6 +128,12 @@
             </el-select-v2>
           </el-form-item>
           <el-form-item label="地址类型" prop="type">
+            <el-autocomplete
+                v-model="form.type"
+                :fetch-suggestions="querySearch"
+                clearable
+                placeholder="请输入地址类型"
+            />
             <el-input v-model="form.type" placeholder="请输入地址类型"/>
           </el-form-item>
           <el-form-item label="设备名称" prop="devId">
@@ -159,6 +165,7 @@ import {getDevOptions} from "@/api/ledger/device.js";
 import {cloneDeep, isEqual} from "lodash";
 import {Check, Search} from "@element-plus/icons-vue";
 
+
 const {proxy} = getCurrentInstance();
 
 const ipList = ref([]);
@@ -181,7 +188,8 @@ const allIpList = ref([])
 const data = reactive({
   form: {
     netmask: 24,
-    ipSeg: null
+    ipSeg: null,
+    type:''
   },
   queryParams: {
     pageNum: 1,
@@ -207,6 +215,11 @@ function checkMaxVal(rule, value, callback) {
 }
 
 function isValidIp(rule, value, callback) { // 校验IP是否符合规则
+  if (value === null) {
+    // 这里根据需求处理 value 为 null 的情况，可以直接通过或者返回错误信息
+    return ;
+  }
+
   var regEx = /,/g
   var ipList = value.toString().replace(regEx, ',').split(',')
   var reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
@@ -244,7 +257,7 @@ function reset() {
   form.value = {
     id: null,
     ipAddr: null,
-    type: null,
+    type: '',
     devId: null,
     dev_name: null,
     ipSeg: null,
@@ -394,10 +407,29 @@ function getIpTypeList() {
 }
 
 onBeforeMount(() => {
-  getIpTypeList(); // 在beforeCreate时调用方法
   getDevList();
+  getIpTypeList(); // 在beforeCreate时调用方法
+
 
 });
+
+const querySearch = (queryString,cb) => {
+  if (queryString==null) queryString="网"
+ console.log(queryString)
+
+  const results = queryString
+      ? ipTypeOps.value.filter(createFilter(queryString))
+      : ipTypeOps.value
+  // call callback function to return suggestions
+  cb(results)
+};
+const createFilter=(queryString) => {
+  return(item)=>{
+   return(item.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1)
+  }
+};
+
+
 // 使得ip输入的框框也能随着窗口关闭而隐藏
 watch(()=>open.value,(newValue,oldValue)=>{
   if (open.value==false){
@@ -414,6 +446,14 @@ watch(() => data.queryParams.ipAddr, (newValue, oldValue) => {
   }
 });
 watch(() => data.queryParams.type, (newValue, oldValue) => {
+  // 在这里处理数据变化时的操作
+  if (newValue == '') {
+    resetQuery()
+  } else {
+    handleQuery()
+  }
+});
+watch(() => data.queryParams.devId, (newValue, oldValue) => {
   // 在这里处理数据变化时的操作
   if (newValue == '') {
     resetQuery()

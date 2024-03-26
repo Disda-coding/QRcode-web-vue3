@@ -140,10 +140,10 @@
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="deviceList" @selection-change="handleSelectionChange"
+    <el-table v-loading="loading" :data="deviceList" height="500" @selection-change="handleSelectionChange"
               @sort-change="handleSortChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column fixed label="主键id" align="center" prop="id"/>
+<!--      <el-table-column fixed label="主键id" align="center" prop="id"/>-->
       <el-table-column fixed label="所属机柜" align="center" prop="ledgerLocation.name"/>
       <el-table-column fixed label="设备名称" align="center" prop="devName"/>
       <el-table-column fixed label="设备简称" align="center" prop="abbreviation"/>

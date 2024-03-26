@@ -64,7 +64,7 @@
 
     <el-table v-loading="loading" :data="locationList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="主键id" align="center" prop="id"/>
+<!--      <el-table-column label="主键id" align="center" prop="id"/>-->
       <el-table-column label="机柜名" align="center" prop="name"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">

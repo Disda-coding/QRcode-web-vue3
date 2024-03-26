@@ -73,9 +73,9 @@
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="deviceDetailsList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="deviceDetailsList" height="500" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="主键id" align="center" prop="id"/>
+<!--      <el-table-column label="主键id" align="center" prop="id"/>-->
       <el-table-column label="设备类型" align="center" prop="devType"/>
       <el-table-column label="设备型号" align="center" prop="devModel"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
