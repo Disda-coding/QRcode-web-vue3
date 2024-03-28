@@ -90,7 +90,7 @@
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
       <el-form ref="locationRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="机柜名" prop="name">
-          <el-input v-model="form.name" placeholder="请输入机柜名"/>
+          <el-input v-model="form.name" clearable placeholder="请输入机柜名"/>
         </el-form-item>
         <el-form-item label="主机列表" v-if="title=='机柜地址'">
         <div class="tag" v-for="(tag,index) in devList">
@@ -250,7 +250,7 @@ function submitForm() {
     if (valid) {
       // 判断是否需要像后台提交
       if (isEqual(updateForm.value, form.value)) {
-        proxy.$modal.msgSuccess("无修改");
+        proxy.$modal.msg("无修改");
         open.value = false;
         return;
       }
@@ -291,7 +291,7 @@ function handleExport() {
 }
 
 getList();
-onBeforeMount(() => {
+onMounted(() => {
   getLocationList(); // 在beforeCreate时调用方法
 });
 // 监听事件，可以实现输入为空时自动查询数据库

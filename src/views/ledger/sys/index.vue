@@ -80,7 +80,7 @@
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
       <el-form ref="sysRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="操作系统" prop="sysType">
-          <el-input v-model="form.sysType" placeholder="请输入操作系统" />
+          <el-input v-model="form.sysType" clearable placeholder="请输入操作系统" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -194,7 +194,7 @@ function submitForm() {
     if (valid) {
       // 判断是否需要像后台提交
       if(isEqual(updateForm.value,form.value)){
-        proxy.$modal.msgSuccess("无修改");
+        proxy.$modal.msg("无修改");
         open.value = false;
         return ;
       }

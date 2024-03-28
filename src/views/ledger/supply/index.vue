@@ -67,7 +67,7 @@
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
       <el-form ref="supplyRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="电源状态" prop="status">
-          <el-input v-model="form.status" placeholder="请输入电源状态"/>
+          <el-input v-model="form.status" clearable placeholder="请输入电源状态"/>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -179,7 +179,7 @@ function submitForm() {
     if (valid) {
       // 判断是否需要像后台提交
       if(isEqual(updateForm.value,form.value)){
-        proxy.$modal.msgSuccess("无修改");
+        proxy.$modal.msg("无修改");
         open.value = false;
         return ;
       }

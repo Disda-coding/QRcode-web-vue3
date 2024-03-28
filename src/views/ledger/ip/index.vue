@@ -110,10 +110,10 @@
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
       <el-form ref="ipRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="ip网段" prop="ipSeg">
-          <el-input v-model="form.ipSeg" placeholder="请输入ip网段信息" style="width: 52%"/>
+          <el-input v-model="form.ipSeg" clearable placeholder="请输入ip网段信息" style="width: 52%"/>
           &nbsp/&nbsp
           <el-form-item label="" prop="netmask" style="width: 20%">
-            <el-input v-model="form.netmask" placeholder="24"/>
+            <el-input v-model="form.netmask" clearable placeholder="24"/>
           </el-form-item>
           <el-button :icon="Search" @click="checkIPSeg" style="margin-left: 10px">验 证</el-button>
         </el-form-item>
@@ -312,7 +312,7 @@ function submitForm() {
   proxy.$refs["ipRef"].validate(valid => {
     if (valid) {
       if (isEqual(updateForm.value, form.value)) {
-        proxy.$modal.msgSuccess("无修改");
+        proxy.$modal.msg("无修改");
         open.value = false;
         ipFlag.value = false;
         return;
@@ -405,13 +405,11 @@ function getIpTypeList() {
     ipTypeOps.value = options
   })
 }
-
-onBeforeMount(() => {
+onMounted(()=>{
   getDevList();
-  getIpTypeList(); // 在beforeCreate时调用方法
-
-
+  getIpTypeList();
 });
+
 
 const querySearch = (queryString,cb) => {
   if (queryString==null) queryString="网"

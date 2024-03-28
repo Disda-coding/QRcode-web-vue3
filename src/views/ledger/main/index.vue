@@ -190,13 +190,13 @@
         >
           <el-form :model="uploadForm[index]" :rules="rules" label-width="80px">
             <el-form-item label="设备名称" prop="devName">
-              <el-input v-model="uploadForm[index].devName" placeholder="请输入设备名称"/>
+              <el-input v-model="uploadForm[index].devName" clearable placeholder="请输入设备名称"/>
             </el-form-item>
             <el-form-item label="序列号" prop="sn">
-              <el-input v-model="uploadForm[index].sn" placeholder="请输入序列号"/>
+              <el-input v-model="uploadForm[index].sn" clearable placeholder="请输入序列号"/>
             </el-form-item>
             <el-form-item label="简称" prop="abbreviation">
-              <el-input v-model="uploadForm[index].abbreviation" placeholder="请输入简称"/>
+              <el-input v-model="uploadForm[index].abbreviation" clearable placeholder="请输入简称"/>
             </el-form-item>
             <el-form-item label="设备型号" prop="devModelId">
               <el-select-v2 style="width: 100%"
@@ -626,7 +626,7 @@ function submitForm() {
 
   // 判断是否需要像后台提交
   if (isEqual(updateForm.value, form.value)) {
-    proxy.$modal.msgSuccess("无修改");
+    proxy.$modal.msg("无修改");
     open.value = false;
     return;
   } else if (form.value.id != null) {
@@ -775,7 +775,7 @@ function handleTabsEdit(targetName, action) {
 }
 
 getList();
-onBeforeMount(() => {
+onMounted(() => {
   getDevList();
   getDevModelList();
   getLocationList();

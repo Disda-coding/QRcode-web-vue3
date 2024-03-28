@@ -102,10 +102,10 @@
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
       <el-form ref="deviceDetailsRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="设备类型" prop="devType">
-          <el-input v-model="form.devType" placeholder="请输入设备类型"/>
+          <el-input v-model="form.devType" clearable placeholder="请输入设备类型"/>
         </el-form-item>
         <el-form-item label="设备型号" prop="devModel">
-          <el-input v-model="form.devModel" placeholder="请输入设备型号"/>
+          <el-input v-model="form.devModel" clearable placeholder="请输入设备型号"/>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -250,7 +250,7 @@ function submitForm() {
     if (valid) {
       // 判断是否需要像后台提交
       if(isEqual(updateForm.value,form.value)){
-        proxy.$modal.msgSuccess("无修改");
+        proxy.$modal.msg("无修改");
         open.value = false;
         return ;
       }
@@ -291,7 +291,7 @@ function handleExport() {
 }
 
 getList();
-onBeforeMount(() => {
+onMounted(() => {
   getDevTypeList(); // 在beforeCreate时调用方法
   getDevModelList(); // 在beforeCreate时调用方法
 });
